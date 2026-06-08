@@ -1,0 +1,12 @@
+gradio
+fastapi
+uvicorn
+easyocr
+torch
+numpy
+pillow
+joblib
+scikit-learn
+opencv-python-headless
+python-multipart
+fpdf==1.7.2

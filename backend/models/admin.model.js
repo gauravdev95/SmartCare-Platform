@@ -1,31 +1,27 @@
-const mongoose = require('mongoose');
+const mongoose = require("mongoose");
 
-
-// Admin Schema
-const adminSchema = new mongoose.Schema({
+const adminSchema = new mongoose.Schema(
+  {
     name: {
-        type: String,
-        required: true,
+      type: String,
+      required: true,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true,
+      type: String,
+      required: true,
+      unique: true,
     },
     password: {
-        type: String,
-        required: true,
-        minLength:6,
+      type: String,
+      required: true,
     },
     role: {
-        type: String,
-        enum: ['admin'],
-        default: 'admin',
+      type: String,
+      enum: ["admin"],
+      default: "admin",
     },
-    },
-    {
-    timestamps: true, 
-    }
+  },
+  { timestamps: true }
 );
 
-module.exports = mongoose.model('Admin', adminSchema);
+module.exports = mongoose.model("Admin", adminSchema);

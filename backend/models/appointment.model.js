@@ -1,7 +1,5 @@
 const mongoose = require('mongoose');
 
-
-// Appointment Schema,
 const appointmentSchema = new mongoose.Schema(
   {
     user: {
@@ -18,46 +16,67 @@ const appointmentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    time: {
-      type: String,
-    },
+    time: String,
+
     description: {
       type: String,
       required: true,
     },
+
     roomId: {
       type: String,
       default: () => new mongoose.Types.ObjectId().toString(),
       unique: true,
     },
-    isCompleted: {
+
+    prescription: {
+      medicines: [String],
+      notes: String,
+      precautions: String,
+    },
+    suggestedTests: [String],
+
+    testReports: [
+      {
+        url: String,
+        uploadedAt: Date,
+      }
+    ],
+
+    review: String,
+
+    callStartedAt: Date,
+    callEndedAt: Date,
+
+    completedAt: Date,
+
+    paymentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Payment"
+    },
+    paymentStatus: {
+      type: String,
+      enum: ['pending', 'paid', 'failed'],
+      default: 'pending'
+    },
+
+    isFollowUp: {
       type: Boolean,
       default: false,
     },
-    prescription: {
-      type: String,
-      default: '',
-    },
-    testReports: {
-      type: String,
-      default: '',
-    },
-    paymentId: { type: mongoose.Schema.Types.ObjectId, ref: "Payment" },
     status: {
       type: String,
       enum: [
-        'pending',               // booked, not started yet
-        'vidoes-call',           // during video call
-        'awaiting_prescription', // after call, waiting for prescription
-        'completed',             // prescription uploaded
-        'cancelled'              // cancelled
+        'pending',
+        'ongoing',
+        'awaiting_prescription',
+        'completed',
+        'cancelled'
       ],
       default: 'pending',
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
 module.exports = mongoose.model('Appointment', appointmentSchema);

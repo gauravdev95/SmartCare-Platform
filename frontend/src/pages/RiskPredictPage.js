@@ -1,233 +1,207 @@
 import { useState } from "react";
 import axios from "axios";
-import { uploadToCloudinary } from "../services/cloudinary.service";
-import { motion } from "framer-motion";
-import { Loader2, FileUp, Brain } from "lucide-react";
+import { AlertCircle, Brain, FileUp, Loader2, Stethoscope } from "lucide-react";
 import BASE_URL from "../api/api";
 
+const initialForm = {
+  patientName: "",
+  age: "",
+  gender: "",
+  symptoms: "",
+  temperature: "",
+  bloodPressure: "",
+  pulse: "",
+  heartbeat: "",
+  bloodGlucose: "",
+  weight: "",
+  height: "",
+};
 
-// Risk Predict Page Component
 function RiskPredictPage() {
-  const [file, setFile] = useState(null);
+  const [form, setForm] = useState(initialForm);
+  const [report, setReport] = useState(null);
   const [result, setResult] = useState(null);
+  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
-  // ================= Upload & Analyze =================
-  const handleUpload = async () => {
-    if (!file) {
-      alert("Please select a PDF file");
+  const updateField = (event) => {
+    const { name, value } = event.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    setError("");
+    setResult(null);
+
+    if (!report && !form.symptoms && !form.temperature && !form.bloodPressure && !form.bloodGlucose) {
+      setError("Upload a report or enter health details before generating prediction.");
       return;
     }
 
-    setLoading(true);
-    setResult(null);
+    const payload = new FormData();
+    Object.entries(form).forEach(([key, value]) => payload.append(key, value));
+
+    if (report) {
+      payload.append("report", report);
+    }
 
     try {
-      const pdfUrl = await uploadToCloudinary(file, "pdf");
-
-      const { data } = await axios.post(
-        `${BASE_URL}/report/analyze`,
-        { fileUrl: pdfUrl }
-      );
-
+      setLoading(true);
+      const { data } = await axios.post(`${BASE_URL}/report/predict`, payload, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       setResult(data);
-    } catch (error) {
-      console.error(error);
-      alert("Error while analyzing report");
+    } catch (err) {
+      setError(
+        err.response?.data?.message ||
+          "Prediction failed. Please make sure backend and ML server are running."
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // ================= Risk Color =================
-  const getRiskStyles = (risk) => {
-    if (risk === "High Risk")
-      return "bg-red-100 text-red-700 border-red-300";
-    if (risk === "Medium Risk")
-      return "bg-yellow-100 text-yellow-700 border-yellow-300";
-    return "bg-green-100 text-green-700 border-green-300";
+  const resetForm = () => {
+    setForm(initialForm);
+    setReport(null);
+    setResult(null);
+    setError("");
   };
 
-  // ================= Filter Not Found =================
-  const filteredResults =
-    result?.report_analysis?.filter(
-      (item) => item.value && item.value !== "Not Found"
-    ) || [];
+  return (
+    <main className="min-h-screen bg-slate-50 px-4 py-8 text-slate-900">
+      <div className="mx-auto max-w-6xl">
+        <header className="mb-8 flex items-center gap-3">
+          <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-blue-600 text-white">
+            <Brain size={26} />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold">AI Disease Prediction</h1>
+            <p className="text-sm text-slate-600">
+              Upload a report and enter patient details to generate a medical summary.
+            </p>
+          </div>
+        </header>
+
+        <form onSubmit={handleSubmit} className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+          <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="mb-4 text-lg font-semibold">Patient Details</h2>
+
+            <div className="grid gap-4 sm:grid-cols-2">
+              <input name="patientName" value={form.patientName} onChange={updateField} placeholder="Patient name" className="rounded-md border border-slate-300 px-3 py-2" />
+              <input name="age" value={form.age} onChange={updateField} placeholder="Age" className="rounded-md border border-slate-300 px-3 py-2" />
+              <select name="gender" value={form.gender} onChange={updateField} className="rounded-md border border-slate-300 px-3 py-2">
+                <option value="">Gender</option>
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+                <option value="Other">Other</option>
+              </select>
+              <input name="temperature" value={form.temperature} onChange={updateField} placeholder="Temperature, e.g. 98.6" className="rounded-md border border-slate-300 px-3 py-2" />
+              <input name="bloodPressure" value={form.bloodPressure} onChange={updateField} placeholder="Blood pressure, e.g. 120/80" className="rounded-md border border-slate-300 px-3 py-2" />
+              <input name="pulse" value={form.pulse} onChange={updateField} placeholder="Pulse, e.g. 72" className="rounded-md border border-slate-300 px-3 py-2" />
+              <input name="heartbeat" value={form.heartbeat} onChange={updateField} placeholder="Heartbeat, e.g. 80" className="rounded-md border border-slate-300 px-3 py-2" />
+              <input name="bloodGlucose" value={form.bloodGlucose} onChange={updateField} placeholder="Blood glucose, e.g. 110" className="rounded-md border border-slate-300 px-3 py-2" />
+              <input name="weight" value={form.weight} onChange={updateField} placeholder="Weight kg, e.g. 70" className="rounded-md border border-slate-300 px-3 py-2" />
+              <input name="height" value={form.height} onChange={updateField} placeholder="Height cm, e.g. 170" className="rounded-md border border-slate-300 px-3 py-2" />
+            </div>
+
+            <textarea
+              name="symptoms"
+              value={form.symptoms}
+              onChange={updateField}
+              placeholder="Symptoms or notes"
+              rows={4}
+              className="mt-4 w-full rounded-md border border-slate-300 px-3 py-2"
+            />
+          </section>
+
+          <section className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="mb-4 text-lg font-semibold">Medical Report</h2>
+
+            <label className="flex min-h-40 cursor-pointer flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 px-4 py-6 text-center hover:border-blue-500">
+              <FileUp className="mb-2 text-blue-600" size={30} />
+              <span className="font-medium">{report ? report.name : "Upload PDF, JPG, JPEG, or PNG"}</span>
+              <span className="mt-1 text-xs text-slate-500">Maximum size: 10 MB</span>
+              <input
+                type="file"
+                accept=".pdf,.jpg,.jpeg,.png"
+                onChange={(event) => setReport(event.target.files?.[0] || null)}
+                className="hidden"
+              />
+            </label>
+
+            {error && (
+              <div className="mt-4 flex gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+                <AlertCircle size={18} />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div className="mt-5 flex gap-3">
+              <button
+                type="submit"
+                disabled={loading}
+                className="inline-flex flex-1 items-center justify-center gap-2 rounded-md bg-blue-600 px-4 py-3 font-semibold text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:bg-blue-300"
+              >
+                {loading ? <Loader2 className="animate-spin" size={20} /> : <Stethoscope size={20} />}
+                {loading ? "Generating..." : "Generate Prediction"}
+              </button>
+              <button type="button" onClick={resetForm} className="rounded-md border border-slate-300 px-4 py-3 font-semibold text-slate-700 hover:bg-slate-100">
+                Reset
+              </button>
+            </div>
+          </section>
+        </form>
+
+        {result && (
+          <section className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
+            <h2 className="mb-4 text-lg font-semibold">Prediction Result</h2>
+
+            <div className="grid gap-4 md:grid-cols-3">
+              <ResultBox label="Disease Prediction" value={result.disease_prediction || "N/A"} />
+              <ResultBox label="Confidence Score" value={`${result.confidence_score ?? 0}%`} />
+              <ResultBox label="Risk Level" value={result.risk_level || "N/A"} />
+            </div>
+
+            <ListBlock title="Suggestions" items={result.suggestions} />
+            <ListBlock title="Recommendations" items={result.recommendations} />
+
+            {result.summary && (
+              <div className="mt-5">
+                <h3 className="mb-2 font-semibold">Detailed Summary</h3>
+                <pre className="whitespace-pre-wrap rounded-md bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                  {result.summary}
+                </pre>
+              </div>
+            )}
+          </section>
+        )}
+      </div>
+    </main>
+  );
+}
+
+function ResultBox({ label, value }) {
+  return (
+    <div className="rounded-md border border-slate-200 bg-slate-50 p-4">
+      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
+      <p className="mt-2 text-lg font-bold text-slate-900">{value}</p>
+    </div>
+  );
+}
+
+function ListBlock({ title, items = [] }) {
+  if (!items.length) return null;
 
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-blue-100 via-white to-green-100">
-      <motion.div
-        initial={{ opacity: 0, y: 30 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="
-          w-full
-          min-h-screen
-          bg-white
-          px-4
-          sm:px-6
-          md:px-10
-          lg:px-16
-          py-10
-        "
-      >
-        {/* ================= HEADER ================= */}
-        <div className="text-center mb-10">
-          <Brain className="w-16 h-16 text-blue-600 mx-auto mb-3" />
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-800">
-            AI Medical Report Analysis
-          </h1>
-          <p className="text-gray-500 text-sm mt-2">
-            Upload your medical report (PDF) to get risk & doctor suggestions
-          </p>
-        </div>
-
-        {/* ================= FILE INPUT ================= */}
-        <div className="max-w-2xl mx-auto">
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={(e) => setFile(e.target.files[0])}
-            className="w-full border border-gray-300 rounded-xl p-3"
-          />
-
-          {/* ================= BUTTON ================= */}
-          <button
-            onClick={handleUpload}
-            disabled={loading}
-            className="
-              mt-4
-              w-full
-              bg-blue-600
-              hover:bg-blue-700
-              text-white
-              py-3
-              rounded-xl
-              flex
-              justify-center
-              items-center
-              gap-2
-              font-semibold
-              transition
-            "
-          >
-            {loading ? <Loader2 className="animate-spin" /> : <FileUp />}
-            {loading ? "Analyzing..." : "Upload & Analyze"}
-          </button>
-        </div>
-
-        {/* ================= RESULT ================= */}
-        {result && (
-          <>
-            {/* ================= RISK LEVEL ================= */}
-            {result?.risk_level && (
-              <div
-                className={`mt-10 max-w-3xl mx-auto border rounded-2xl p-6 text-center font-semibold text-lg ${getRiskStyles(
-                  result.risk_level
-                )}`}
-              >
-                <p>
-                  Overall Health Risk Level:
-                  <span className="ml-2 text-xl font-bold">
-                    {result.risk_level}
-                  </span>
-                </p>
-
-                <p className="text-sm mt-2">
-                  Abnormal Parameters Detected:{" "}
-                  <span className="font-bold">
-                    {result.abnormal_parameters}
-                  </span>
-                </p>
-              </div>
-            )}
-
-            {/* ================= REPORT DETAILS ================= */}
-            {filteredResults.length > 0 ? (
-              <>
-                <h2 className="text-2xl font-semibold text-gray-800 mt-12 mb-6 text-center">
-                  Report Analysis Details
-                </h2>
-
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredResults.map((item, index) => (
-                    <div
-                      key={index}
-                      className="bg-gray-50 border border-gray-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition"
-                    >
-                      <p className="text-gray-500 text-sm">
-                        {item.parameter}
-                      </p>
-
-                      <p
-                        className={`text-xl font-bold mt-1 ${
-                          item.status === "Normal"
-                            ? "text-green-600"
-                            : "text-red-600"
-                        }`}
-                      >
-                        {item.value}
-                      </p>
-
-                      <p className="text-xs text-gray-400 mt-1">
-                        Normal Range: {item.normal_range}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </>
-            ) : (
-              <p className="text-center text-gray-500 mt-8">
-                No readable medical values found in this report.
-              </p>
-            )}
-
-            {/* ================= SPECIALIST ================= */}
-            {result?.specialist_suggestion && (
-              <div className="max-w-3xl mx-auto">
-                <button
-                  onClick={() => {
-                    window.location.href = `/doctors?specialist=${encodeURIComponent(
-                      result.specialist_suggestion
-                    )}&sort=best`;
-                  }}
-                  className="
-                    mt-10
-                    w-full
-                    bg-gradient-to-r from-purple-600 to-indigo-600
-                    hover:from-purple-700 hover:to-indigo-700
-                    text-white
-                    py-4
-                    rounded-2xl
-                    text-lg
-                    font-bold
-                    shadow-lg
-                    transition-all
-                    duration-300
-                  "
-                >
-                  🔍 Find Best {result.specialist_suggestion} Doctors
-                </button>
-              </div>
-            )}
-
-            {/* ================= DOCTOR MESSAGE ================= */}
-            {result?.doctor_suggestion && (
-              <p className="mt-6 text-gray-600 italic text-center">
-                {result.doctor_suggestion}
-              </p>
-            )}
-          </>
-        )}
-
-        {/* ================= FOOTER ================= */}
-        <p className="text-gray-500 text-sm mt-16 text-center">
-          Powered by{" "}
-          <span className="font-semibold text-blue-600">
-            AI Smart Healthcare
-          </span>
-        </p>
-      </motion.div>
+    <div className="mt-5">
+      <h3 className="mb-2 font-semibold">{title}</h3>
+      <ul className="list-disc space-y-1 pl-5 text-sm text-slate-700">
+        {items.map((item, index) => (
+          <li key={`${title}-${index}`}>{item}</li>
+        ))}
+      </ul>
     </div>
   );
 }

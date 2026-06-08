@@ -2,6 +2,7 @@ const User = require('../models/user.model');
 const Admin = require('../models/admin.model');
 const Doctor = require('../models/doctor.model');
 
+
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const Joi = require('joi');

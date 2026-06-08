@@ -3,27 +3,9 @@ const mongoose = require('mongoose');
 
 // Doctor Schema
 const doctorSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  email: {
-    type: String,
-    required: true,
-    unique: true,
-  },
-  password: {
-    type: String,
-    required: true,
-  },
-  location: {
-    type: String,
-    required: true,
-  },
-  role: {
-    type: String,
-    enum: ['doctor'],
-    default: 'doctor',
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
     required: true,
   },
   profilePhoto: {
@@ -38,7 +20,6 @@ const doctorSchema = new mongoose.Schema({
     match: /^\+?[1-9]\d{9,14}$/,
     required:true,
   },
-  
   fees: {
     type: Number,
     min: 1,
@@ -47,38 +28,14 @@ const doctorSchema = new mongoose.Schema({
   specialization: {
     type: String,
     enum: [
-  "Cardiology",
-  "General Physician",
-  "Orthopedics",
-  "Pediatrics",
-  "Neurology",
-  "Dermatology",
-  "Other",
-  "Gynecology",
-  "Psychiatry",
-  "Radiology",
-  "Oncology",
-  "Nephrology",
-  "Urology",
-  "Endocrinology",
-  "Gastroenterology",
-  "Pulmonology",
-  "Hematology",
-  "Rheumatology",
-  "Ophthalmology",
-  "ENT (Ear, Nose, Throat)",
-  "Dentistry",
-  "Anesthesiology",
-  "Pathology",
-  "Infectious Diseases",
-  "Plastic Surgery",
-  "Sports Medicine",
-  "Emergency Medicine",
-  "Geriatrics",
-  "Allergy & Immunology",
-  "Occupational Medicine"
-]
-,
+      "Cardiology","General Physician","Orthopedics","Pediatrics","Neurology",
+      "Dermatology","Other","Gynecology","Psychiatry","Radiology","Oncology",
+      "Nephrology","Urology","Endocrinology","Gastroenterology","Pulmonology",
+      "Hematology","Rheumatology","Ophthalmology","ENT (Ear, Nose, Throat)",
+      "Dentistry","Anesthesiology","Pathology","Infectious Diseases",
+      "Plastic Surgery","Sports Medicine","Emergency Medicine","Geriatrics",
+      "Allergy & Immunology","Occupational Medicine"
+    ],
     required: true,
   },
   certification: {
@@ -94,20 +51,22 @@ const doctorSchema = new mongoose.Schema({
     startTime: String,
     endTime: String,
   }],
-  about: { type: String, default: "" },
-  experience: { type: String, default: "" },
-  achievements: { type: String, default: "" },
-  other: { type: String, default: "" },
-  savedCardToken: String,
-
-  receivedPayments: [{
-    appointment: { type: mongoose.Schema.Types.ObjectId, ref: 'Appointment' },
-    amount: Number,
-    method: String,
-    paymentStatus: String,
-    date: { type: Date, default: Date.now }
-  }],
- 
+  about: {
+    type: String,
+    default: ""
+  },
+  experience: {
+    type: String,
+    default: ""
+  },
+  achievements: {
+    type: String,
+    default: ""
+  },
+  other: {
+    type: String,
+    default: ""
+  },
   createdAt: {
     type: Date,
     default: Date.now,
