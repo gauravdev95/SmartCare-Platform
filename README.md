@@ -10,7 +10,7 @@
 
 <p align="center">
   <a href="https://smart-digital-healthcare-system.onrender.com/"><strong>🌐 Live Demo</strong></a> •
-  <a href="https://github.com/gaurav-opensource/SmartCare-Platform"><strong>💻 GitHub Repo</strong></a>
+  <a href="https://github.com/gauravdev95/SmartCare-Platform"><strong>💻 GitHub Repo</strong></a>
 </p>
 
 <p align="center">
@@ -220,7 +220,7 @@ This project is licensed under the **MIT License**.
 **Author:** Gaurav Yadav
 📧 Email: [gauravyadavgh@example.com](mailto:gauravyadavgh@example.com)
 🔗 LinkedIn: [https://www.linkedin.com/in/gauravyadav95/](https://www.linkedin.com/in/gauravyadav95/)
-💻 GitHub: [https://github.com/gaurav-opensource](https://github.com/gaurav-opensource)
+💻 GitHub: [https://github.com/gauravdev95](https://github.com/gauravdev95)
 
 ---
 
