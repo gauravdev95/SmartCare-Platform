@@ -1,0 +1,32 @@
+# Logs
+*.log
+backend/utils/*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Python cache / generated
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+
+# Gradio generated files
+.gradio/
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+
+# Environment variables
+.env
+.env.*
