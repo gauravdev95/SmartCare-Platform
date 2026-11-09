@@ -2,12 +2,12 @@
 
 > AI-assisted healthcare management platform for patients, doctors, and admins.
 
-[![Status](https://img.shields.io/badge/Status-Active-success)](https://github.com/gaurav-opensource/SmartCare-Platform)
+[![Status](https://img.shields.io/badge/Status-Active-success)](https://github.com/gauravdev95/SmartCare-Platform)
 [![React](https://img.shields.io/badge/Frontend-React-61DAFB?logo=react&logoColor=black)](https://react.dev/)
 [![Node](https://img.shields.io/badge/Backend-Node.js-339933?logo=node.js&logoColor=white)](https://nodejs.org/)
 [![FastAPI](https://img.shields.io/badge/ML-FastAPI-009688?logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-47A248?logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![License](https://img.shields.io/badge/License-ISC-blue)](#license)
+[![License](https://img.shields.io/badge/License-MIT-green)](#license)
 
 ## Overview
 
@@ -207,7 +207,7 @@ SmartCare Platform/
 ### 1. Clone the repository
 
 ```bash
-git clone https://github.com/gaurav-opensource/SmartCare-Platform.git
+git clone https://github.com/gauravdev95/SmartCare-Platform.git
 cd "SmartCare Platform"
 ```
 
@@ -552,13 +552,10 @@ Contributions are welcome.
 
 ## License
 
-No standalone `LICENSE` file is currently committed to the repository.
-
-The `package.json` metadata declares `ISC`, but a dedicated license file should be added before publishing the project publicly.
+This project is licensed under the MIT License — see the [`LICENSE`](LICENSE) file at the repository root.
 
 ## Author
 
 - Gaurav Yadav
-- GitHub: https://github.com/gaurav-opensource
+- GitHub: https://github.com/gauravdev95
 - LinkedIn: https://www.linkedin.com/in/gauravyadav95/
-- Email: gauravyadavgh@example.com
